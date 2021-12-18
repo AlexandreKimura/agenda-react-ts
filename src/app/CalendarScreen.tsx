@@ -21,6 +21,7 @@ const useStyles = makeStyles({
 
 export function CalendarScreen() {
   const classes = useStyles()
+  const weeks = generateCalendar(getToday())
 
   return (
     <Box display='flex' height="100%" alignItems="stretch">
@@ -66,18 +67,48 @@ export function CalendarScreen() {
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow>
-              {DAYS_OF_WEEK.map(day => <TableCell align='center' key={day}>X</TableCell>)}
-            </TableRow>
-            <TableRow>
-              {DAYS_OF_WEEK.map(day => <TableCell align='center' key={day}>X</TableCell>)}
-            </TableRow>
-            <TableRow>
-              {DAYS_OF_WEEK.map(day => <TableCell align='center' key={day}>X</TableCell>)}
-            </TableRow>
+            {weeks.map((week, i) => (
+              <TableRow>
+                {week.map(cell => <TableCell align='center' key={cell.date}>{cell.date}</TableCell>)}
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
     </Box>
   )
 }
+
+interface ICalendarCell {
+  date: string
+}
+
+function generateCalendar(date: Date): ICalendarCell[][] {
+  const weeks: ICalendarCell[][] = []
+  const jsDate = new Date()
+  const currentMonth = jsDate.getMonth()
+
+  const currentDay = new Date(jsDate.valueOf())
+  currentDay.setDate(1);
+
+  const dayOfWeek = currentDay.getDay()
+
+  currentDay.setDate(1 - dayOfWeek)
+
+  do {
+    const week:ICalendarCell[] = [];
+    for(let i = 0; i < DAYS_OF_WEEK.length; i++) {
+      const isoDate = `${currentDay.getFullYear()}-${(currentDay.getMonth() + 1).toString().padStart(2, "0")}-${(currentDay.getDate()).toString().padStart(2, "0")}`
+      week.push({date: isoDate})
+      currentDay.setDate(currentDay.getDate() + 1)
+    }
+    weeks.push(week)
+  } while (currentDay.getMonth() === currentMonth)
+
+  return weeks
+}
+
+function getToday() {
+  return new Date()
+}
+
