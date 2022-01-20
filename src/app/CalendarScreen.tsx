@@ -6,7 +6,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Avatar, Box, Button, Checkbox, FormControlLabel, Icon, IconButton } from '@mui/material';
-import { getEventsEndpoint, IEvent } from './backend';
+import { getCalendarsEndpoint, getEventsEndpoint, ICalendar, IEvent } from './backend';
 import { useEffect, useState } from 'react';
 
 const DAYS_OF_WEEK = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB']
@@ -38,6 +38,12 @@ const useStyles = makeStyles({
     textAlign: "left",
     whiteSpace: "nowrap",
     marginBottom: "4px 0"
+  },
+  eventBackground: {
+    display: "inline-block",
+    color: "white",
+    padding: "2px 4px",
+    borderRadius: "4px"
   }
 })
 
@@ -45,14 +51,17 @@ export function CalendarScreen() {
   const classes = useStyles()
 
   const [events, setEvents] = useState<IEvent[]>([])
+  const [calendars, setCalendars] = useState<ICalendar[]>([])
 
-  const weeks = generateCalendar(getToday(), events)
+  const weeks = generateCalendar(getToday(), events, calendars)
 
   const firstDate = weeks[0][0].date
   const lastDate = weeks[weeks.length - 1][6].date
 
   useEffect(() => {
-    getEventsEndpoint(firstDate, lastDate).then(events => {
+    Promise.all([getCalendarsEndpoint(),
+    getEventsEndpoint(firstDate, lastDate)]).then(([calendars, events]) => {
+      setCalendars(calendars)
       setEvents(events)
     })
   }, [firstDate, lastDate])  
@@ -110,13 +119,24 @@ export function CalendarScreen() {
                       {cell.dayOfMonth}
                     </div>
 
-                    {cell.events.map(event => (
-                      <button className={classes.event}>
-                        {event.time && <Icon fontSize='inherit'>watch_later</Icon>}
-                        {event.time && <Box component="span" margin="0 4px">{event.time}</Box>}
-                        {event.time || ""} {event.desc}
-                      </button>
-                    ))}
+                    {cell.events.map(event => {
+                      const color = event.calendar.color
+                      return (
+                        <button className={classes.event}>
+                          {event.time && (
+                            <> 
+                              <Icon style={{ color }} fontSize='inherit'>
+                                watch_later
+                              </Icon>
+                              <Box component="span" margin="0 4px">
+                                {event.time}
+                              </Box>
+                            </>
+                          )}
+                          {event.time ? <span>{event.desc}</span> : <span className={classes.eventBackground} style={{backgroundColor : color}}>{event.desc}</span>} 
+                        </button>
+                      )
+                    })}
                   </TableCell>)
                 )}
               </TableRow>
@@ -131,10 +151,10 @@ export function CalendarScreen() {
 interface ICalendarCell {
   date: string
   dayOfMonth: number
-  events:  IEvent[]
+  events:  (IEvent & { calendar: ICalendar})[]
 }
 
-function generateCalendar(date: Date, allEvents: IEvent[]): ICalendarCell[][] {
+function generateCalendar(date: Date, allEvents: IEvent[], calendars: ICalendar[]): ICalendarCell[][] {
   const weeks: ICalendarCell[][] = []
   const jsDate = new Date()
   const currentMonth = jsDate.getMonth()
@@ -150,7 +170,14 @@ function generateCalendar(date: Date, allEvents: IEvent[]): ICalendarCell[][] {
     const week:ICalendarCell[] = [];
     for(let i = 0; i < DAYS_OF_WEEK.length; i++) {
       const isoDate = `${currentDay.getFullYear()}-${(currentDay.getMonth() + 1).toString().padStart(2, "0")}-${(currentDay.getDate()).toString().padStart(2, "0")}`
-      week.push({ dayOfMonth: currentDay.getDate(), date: isoDate, events: allEvents.filter(e => e.date === isoDate)})
+      week.push({ 
+        dayOfMonth: currentDay.getDate(), 
+        date: isoDate, 
+        events: allEvents.filter(e => e.date === isoDate).map(e => {
+          const calendar = calendars.find(cal => cal.id === e.calendarId)!
+          return {...e, calendar}
+        })
+      })
       currentDay.setDate(currentDay.getDate() + 1)
     }
     weeks.push(week)
