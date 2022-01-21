@@ -8,6 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import { Avatar, Box, Button, Checkbox, FormControlLabel, Icon, IconButton } from '@mui/material';
 import { getCalendarsEndpoint, getEventsEndpoint, ICalendar, IEvent } from './backend';
 import { useEffect, useState } from 'react';
+import { getToday } from './dateFunctions';
 
 const DAYS_OF_WEEK = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB']
 
@@ -212,8 +213,3 @@ function generateCalendar(
 
   return weeks
 }
-
-function getToday() {
-  return new Date()
-}
-
