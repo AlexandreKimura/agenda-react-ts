@@ -1,26 +1,34 @@
-import * as React from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { TextField } from '@mui/material';
+import { ICalendar } from './backend';
+
+export interface IEditingEvent {
+  id?: number
+  date: string
+  time?: string
+  desc: string
+  calendarId: number
+}
 
 interface IEventFormDialog {
-  open: boolean
+  event: IEditingEvent | null
+  calendars: ICalendar[]
   onClose: () => void
 }
 
 export function EventFormDialog(props: IEventFormDialog) {
 
-  const { open, onClose } = props
+  const { event, calendars, onClose } = props
 
   return (
     <div>
       <Dialog
-        open={open}
+        open={!!event}
         onClose={onClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
@@ -29,33 +37,42 @@ export function EventFormDialog(props: IEventFormDialog) {
           Criar evento
         </DialogTitle>
         <DialogContent>
-          <TextField 
-            type="date"
-            margin='normal'
-            label="Data"
-            fullWidth
-          />
-          <TextField 
-            autoFocus
-            margin='normal'
-            label="Descrição"
-            fullWidth
-          />
-          <TextField 
-            type="time"
-            margin='normal'
-            label="Hora"
-            fullWidth
-          />
-          <FormControl  margin='normal' fullWidth>
-            <InputLabel id='select-calendar'>Agenda</InputLabel>
-            <Select
-              labelId='select-calendar'
-            >
-              <MenuItem>Pessoal</MenuItem>
-              <MenuItem>Trabalho</MenuItem>
-            </Select>
-          </FormControl>
+          {event && (
+            <>
+              <TextField 
+                type="date"
+                margin='normal'
+                label="Data"
+                fullWidth
+                value={event.date}
+              />
+              <TextField 
+                autoFocus
+                margin='normal'
+                label="Descrição"
+                fullWidth
+                value={event.desc}
+              />
+              <TextField 
+                type="time"
+                margin='normal'
+                label="Hora"
+                fullWidth
+                value={event.time}
+              />
+              <FormControl  margin='normal' fullWidth>
+                <InputLabel id='select-calendar'>Agenda</InputLabel>
+                <Select
+                  labelId='select-calendar'
+                  value={event.calendarId}
+                >
+                  {calendars.map((calendar) => {
+                    return <MenuItem key={calendar.id} value={calendar.id}>{calendar.name}</MenuItem>
+                  })}
+                </Select>
+              </FormControl>
+            </>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Cancelar</Button>
