@@ -3,9 +3,9 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { Box, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { TextField } from '@mui/material';
-import { createEventEndpoint, ICalendar, IEditingEvent } from './backend';
+import { createEventEndpoint, deleteEventEndpoint, ICalendar, IEditingEvent, updateEventEndpoint } from './backend';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 
 interface IEventFormDialog {
@@ -34,6 +34,8 @@ export function EventFormDialog(props: IEventFormDialog) {
     setErrors({})
   }, [props.event])
 
+  const isNew = !event?.id
+
   function validate(): boolean {
     if(event) {
       const currentErrors: IValidationErrors = {}
@@ -56,8 +58,18 @@ export function EventFormDialog(props: IEventFormDialog) {
     e.preventDefault()
     if(event) {
       if(validate()) {
-        createEventEndpoint(event).then(onSave)
+        if(isNew) {
+          createEventEndpoint(event).then(onSave)
+        }else {
+          updateEventEndpoint(event).then(onSave)
+        }
       }
+    }
+  }
+
+  function deleteEvent() {
+    if(event) {
+      deleteEventEndpoint(event.id!).then(onSave)
     }
   }
 
@@ -71,8 +83,8 @@ export function EventFormDialog(props: IEventFormDialog) {
         aria-describedby="alert-dialog-description"
       >
         <form onSubmit={save} >
-        <DialogTitle id="alert-dialog-title">
-          Criar evento
+        <DialogTitle id="alert-dialog-title" >
+          {isNew ? "Criar evento" : "Editar evento"}
         </DialogTitle>
         <DialogContent>
           {event && (
@@ -123,6 +135,10 @@ export function EventFormDialog(props: IEventFormDialog) {
           )}
         </DialogContent>
         <DialogActions>
+          {!isNew && (
+            <Button type='button' onClick={deleteEvent}>Excluir</Button>
+          )}
+          <Box flex="1"></Box>
           <Button type='button' onClick={onCancel}>Cancelar</Button>
           <Button type="submit" autoFocus>
             Salvar

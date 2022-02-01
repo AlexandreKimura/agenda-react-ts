@@ -46,9 +46,9 @@ export function CalendarScreen() {
     setCalendarsSelected(newValue)
   }
 
-  function openNewEvent() {
+  function openNewEvent(date: string) {
     setEditingEvent({
-      date: getToday(),
+      date,
       desc: "",
       calendarId: calendars[0].id
     })
@@ -58,7 +58,7 @@ export function CalendarScreen() {
     <Box display='flex' height="100%" alignItems="stretch">
       <Box borderRight='1px solid rgb(224, 224, 224)' width="16em" padding="8px 16px">
         <h2>Agenda React</h2>
-        <Button variant='contained' color='primary' onClick={openNewEvent}>
+        <Button variant='contained' color='primary' onClick={() => openNewEvent(getToday())}>
           Novo evento
         </Button>
 
@@ -67,7 +67,7 @@ export function CalendarScreen() {
 
       <Box flex="1" display="flex" flexDirection="column">
         <CalendarHeader month={month}/>
-        <Calendar weeks={weeks}/>
+        <Calendar weeks={weeks} onClickDay={openNewEvent} onClickEvent={setEditingEvent}/>
         <EventFormDialog 
           event={editingEvent} 
           onCancel={() => setEditingEvent(null)} 
