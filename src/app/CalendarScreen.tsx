@@ -1,12 +1,12 @@
 import { Box, Button } from '@mui/material';
-import { getCalendarsEndpoint, getEventsEndpoint, ICalendar, IEvent } from './backend';
+import { getCalendarsEndpoint, getEventsEndpoint, ICalendar, IEditingEvent, IEvent } from './backend';
 import { useEffect, useState } from 'react';
 import { getToday } from './dateFunctions';
 import { useParams } from 'react-router-dom';
 import { CalendarsView } from './CalendarsView';
 import { CalendarHeader } from './CalendarHeader';
 import { Calendar, ICalendarCell, IEventWithCalendar } from './Calendar';
-import { EventFormDialog, IEditingEvent } from './EventFormDialog'
+import { EventFormDialog } from './EventFormDialog'
 
 export function CalendarScreen() {
 
@@ -35,6 +35,10 @@ export function CalendarScreen() {
       setEvents(events)
     })
   }, [firstDate, lastDate])  
+
+  function refreshEvent() {
+    getEventsEndpoint(firstDate, lastDate).then(setEvents)
+  }
   
   function toggleCalendar(i: number) {
     const newValue = [...calendarsSelected]
@@ -64,7 +68,15 @@ export function CalendarScreen() {
       <Box flex="1" display="flex" flexDirection="column">
         <CalendarHeader month={month}/>
         <Calendar weeks={weeks}/>
-        <EventFormDialog event={editingEvent} onClose={() => setEditingEvent(null)} calendars={calendars}/>
+        <EventFormDialog 
+          event={editingEvent} 
+          onCancel={() => setEditingEvent(null)} 
+          onSave={() => {
+            setEditingEvent(null); 
+            refreshEvent()
+          }}
+          calendars={calendars}
+        />
       </Box>
     </Box>
   )

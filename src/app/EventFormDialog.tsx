@@ -5,26 +5,19 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { TextField } from '@mui/material';
-import { ICalendar } from './backend';
-import { useEffect, useState } from 'react';
-
-export interface IEditingEvent {
-  id?: number
-  date: string
-  time?: string
-  desc: string
-  calendarId: number
-}
+import { createEventEndpoint, ICalendar, IEditingEvent } from './backend';
+import { FormEvent, useEffect, useState } from 'react';
 
 interface IEventFormDialog {
   event: IEditingEvent | null
   calendars: ICalendar[]
-  onClose: () => void
+  onSave: () => void
+  onCancel: () => void
 }
 
 export function EventFormDialog(props: IEventFormDialog) {
 
-  const { calendars, onClose } = props
+  const { calendars, onSave, onCancel } = props
 
   const [event, setEvent] = useState<IEditingEvent | null>(props.event)
 
@@ -32,14 +25,23 @@ export function EventFormDialog(props: IEventFormDialog) {
     setEvent(props.event)
   }, [props.event])
 
+  function save(e: FormEvent) {
+    e.preventDefault()
+    if(event) {
+      createEventEndpoint(event).then(onSave)
+    }
+  }
+
   return (
     <div>
+      
       <Dialog
         open={!!event}
-        onClose={onClose}
+        onClose={onCancel}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
+        <form onSubmit={save} >
         <DialogTitle id="alert-dialog-title">
           Criar evento
         </DialogTitle>
@@ -86,12 +88,13 @@ export function EventFormDialog(props: IEventFormDialog) {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose}>Cancelar</Button>
-          <Button onClick={onClose} autoFocus>
+          <Button type='button' onClick={onCancel}>Cancelar</Button>
+          <Button type="submit" autoFocus>
             Salvar
           </Button>
         </DialogActions>
+        </form>
       </Dialog>
-    </div>
-  );
+    </div> 
+  )
 }
