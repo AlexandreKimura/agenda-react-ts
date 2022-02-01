@@ -6,7 +6,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { TextField } from '@mui/material';
 import { createEventEndpoint, ICalendar, IEditingEvent } from './backend';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 
 interface IEventFormDialog {
   event: IEditingEvent | null
@@ -15,20 +15,49 @@ interface IEventFormDialog {
   onCancel: () => void
 }
 
+interface IValidationErrors {
+  [field: string]: string
+}
+
 export function EventFormDialog(props: IEventFormDialog) {
 
   const { calendars, onSave, onCancel } = props
 
   const [event, setEvent] = useState<IEditingEvent | null>(props.event)
+  const [errors, setErrors] = useState<IValidationErrors>({})
+
+  const inputDate = useRef<HTMLInputElement | null>()
+  const inputDesc = useRef<HTMLInputElement | null>()
 
   useEffect(() => {
     setEvent(props.event)
+    setErrors({})
   }, [props.event])
+
+  function validate(): boolean {
+    if(event) {
+      const currentErrors: IValidationErrors = {}
+      if(!event.date) {
+        currentErrors["date"] = "Data deve ser preenchida"
+        inputDate.current?.focus()
+      }
+      if(!event.desc) {
+        currentErrors["desc"] = "Descrição deve ser preenchida"
+        inputDesc.current?.focus()
+      }
+      setErrors(currentErrors)
+      return Object.keys(currentErrors).length === 0
+    }
+
+    return false
+  }
 
   function save(e: FormEvent) {
     e.preventDefault()
     if(event) {
-      createEventEndpoint(event).then(onSave)
+      if(validate()) {
+        createEventEndpoint(event).then(onSave)
+      }
     }
   }
 
@@ -49,20 +78,26 @@ export function EventFormDialog(props: IEventFormDialog) {
           {event && (
             <>
               <TextField 
+                inputRef={inputDate}
                 type="date"
                 margin='normal'
                 label="Data"
                 fullWidth
                 value={event.date}
                 onChange={(e) => setEvent({...event, date: e.target.value})}
+                error={!!errors.date}
+                helperText={errors.date}
               />
               <TextField 
+               inputRef={inputDesc}
                 autoFocus
                 margin='normal'
                 label="Descrição"
                 fullWidth
                 value={event.desc}
                 onChange={(e) => setEvent({...event, desc: e.target.value})}
+                error={!!errors.desc}
+                helperText={errors.desc}
               />
               <TextField 
                 type="time"
