@@ -8,6 +8,7 @@ import {
 import { getToday } from './dateFunctions';
 import { useEffect, useState } from 'react';
 import { getUserEndpoint } from './backend';
+import { LoginScreen } from './LoginScreen';
 
 function App() {
 
@@ -28,7 +29,7 @@ function App() {
       </Router>
     )
   } else {
-    return <div>Login</div>
+    return <LoginScreen />
   }
   
 }
