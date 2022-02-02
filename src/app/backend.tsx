@@ -17,15 +17,11 @@ export interface IEvent extends IEditingEvent{
 }
 
 export function getCalendarsEndpoint(): Promise<ICalendar[]> {
-  return fetch("http://localhost:8080/calendars").then(resp => {
-    return resp.json()
-  })
+  return fetch("http://localhost:8080/calendars").then(handleResponse)
 }
 
 export function getEventsEndpoint(from: string, to: string): Promise<IEvent[]> {
-  return fetch(`http://localhost:8080/events?date_gte=${from}&date_lte=${to}&_sort=date,time`).then(resp => {
-    return resp.json()
-  })
+  return fetch(`http://localhost:8080/events?date_gte=${from}&date_lte=${to}&_sort=date,time`).then(handleResponse)
 }
 
 export function createEventEndpoint(event: IEditingEvent): Promise<IEvent> {
@@ -35,9 +31,7 @@ export function createEventEndpoint(event: IEditingEvent): Promise<IEvent> {
       "Content-Type": "application/json"
     },
     body: JSON.stringify(event)
-  }).then(resp => {
-    return resp.json()
-  })
+  }).then(handleResponse)
 }
 
 export function updateEventEndpoint(event: IEditingEvent): Promise<IEvent> {
@@ -47,15 +41,23 @@ export function updateEventEndpoint(event: IEditingEvent): Promise<IEvent> {
       "Content-Type": "application/json"
     },
     body: JSON.stringify(event)
-  }).then(resp => {
-    return resp.json()
-  })
+  }).then(handleResponse)
 }
 
 export function deleteEventEndpoint(eventId: number): Promise<void> {
   return fetch(`http://localhost:8080/events/${eventId}`, {
     method: "DELETE"
-  }).then(resp => {
+  }).then(handleResponse)
+}
+
+export function getUserEndpoint(): Promise<void> {
+  return fetch(`http://localhost:8080/auth/user`, {}).then(handleResponse)
+}
+
+function handleResponse(resp: Response) {
+  if(resp.ok) {
     return resp.json()
-  })
+  } else {
+    throw new Error(resp.statusText)
+  }
 }
