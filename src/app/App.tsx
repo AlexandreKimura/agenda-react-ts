@@ -19,11 +19,15 @@ function App() {
     getUserEndpoint().then(() => setUser, () => setUser(null))
   }, [])
 
+  function onSignOut() {
+    setUser(null)
+  }
+
   if(user) {
     return (
       <Router>
          <Routes>
-            <Route path="/calendar/:month" element={<CalendarScreen />} />
+            <Route path="/calendar/:month" element={<CalendarScreen user={user} onSignOut={onSignOut} />} />
             <Route path="*" element={<Navigate to={{ pathname: "/calendar/" + month}} />} />
           </Routes>
       </Router>

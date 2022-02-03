@@ -1,15 +1,18 @@
-import { Avatar, Box, Icon, IconButton } from '@mui/material';
+import { Box, Icon, IconButton } from '@mui/material';
 import { addMonths, formatMonth } from './dateFunctions';
 import { Link } from 'react-router-dom';
-
+import { UserMenu } from './UserMenu';
+import { IUser } from './backend';
 
 interface ICalendarHeaderProps {
   month: string
+  onSignOut: () => void
+  user: IUser
 }
 
 export function CalendarHeader(props: ICalendarHeaderProps) {
 
-  const { month } = props
+  const { month, onSignOut, user } = props
 
   return (
     <Box display='flex' alignItems='center' padding='8px 16px'>
@@ -22,11 +25,10 @@ export function CalendarHeader(props: ICalendarHeaderProps) {
         </IconButton>
       </Box>
       <Box flex='1' marginLeft='16px' component='h3'>{ formatMonth(month) }</Box>
-      <IconButton aria-label='Usuário'>
-        <Avatar>
-          <Icon>person</Icon>
-        </Avatar>
-      </IconButton>
+      <UserMenu 
+        user={user}
+        onSignOut={onSignOut}
+      />
     </Box>
   )
 }

@@ -22,7 +22,7 @@ export function LoginScreen(props: ILoginScreenProps) {
   const { onSignIn } = props
 
   const [email, setEmail] = useState("ale@email.com")
-  const [password, setPassword] = useState("12345")
+  const [password, setPassword] = useState("1234")
   const [error, setError] = useState("")
 
   function signIn(e: FormEvent) {

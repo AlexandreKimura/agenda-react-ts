@@ -1,5 +1,5 @@
 import { Box, Button } from '@mui/material';
-import { getCalendarsEndpoint, getEventsEndpoint, ICalendar, IEditingEvent, IEvent } from './backend';
+import { getCalendarsEndpoint, getEventsEndpoint, ICalendar, IEditingEvent, IEvent, IUser } from './backend';
 import { useEffect, useState } from 'react';
 import { getToday } from './dateFunctions';
 import { useParams } from 'react-router-dom';
@@ -8,7 +8,14 @@ import { CalendarHeader } from './CalendarHeader';
 import { Calendar, ICalendarCell, IEventWithCalendar } from './Calendar';
 import { EventFormDialog } from './EventFormDialog'
 
-export function CalendarScreen() {
+interface ICalendarScreenProps {
+  onSignOut: () => void
+  user: IUser
+}
+
+export function CalendarScreen(props: ICalendarScreenProps) {
+
+  const { onSignOut, user } = props
 
   let { month } = useParams<{ month: string }>()
 
@@ -66,7 +73,7 @@ export function CalendarScreen() {
       </Box>
 
       <Box flex="1" display="flex" flexDirection="column">
-        <CalendarHeader month={month}/>
+        <CalendarHeader month={month} user={user} onSignOut={onSignOut}/>
         <Calendar weeks={weeks} onClickDay={openNewEvent} onClickEvent={setEditingEvent}/>
         <EventFormDialog 
           event={editingEvent} 
