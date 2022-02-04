@@ -1,7 +1,7 @@
 import { IconButton, Avatar, Icon, Menu, MenuItem, Box } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useContext, useState } from "react";
-import { userContext } from "./authContext";
+import { authContext } from "./authContext";
 import { signOutEndpoint } from "./backend";
 
 const useStyles = makeStyles({
@@ -17,18 +17,12 @@ const useStyles = makeStyles({
   }
 })
 
-interface IUserMenu {
-  onSignOut: () => void
-}
-
-export function UserMenu(props: IUserMenu) {
-  const user = useContext(userContext)
+export function UserMenu() {
+  const { onSignOut, user } = useContext(authContext)
 
   const classes = useStyles()
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  
-  const { onSignOut } = props
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

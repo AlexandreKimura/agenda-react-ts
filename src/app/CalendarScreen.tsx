@@ -8,13 +8,7 @@ import { CalendarHeader } from './CalendarHeader';
 import { Calendar, ICalendarCell, IEventWithCalendar } from './Calendar';
 import { EventFormDialog } from './EventFormDialog'
 
-interface ICalendarScreenProps {
-  onSignOut: () => void
-}
-
-export function CalendarScreen(props: ICalendarScreenProps) {
-
-  const { onSignOut } = props
+export function CalendarScreen() {
 
   let { month } = useParams<{ month: string }>()
 
@@ -72,7 +66,7 @@ export function CalendarScreen(props: ICalendarScreenProps) {
       </Box>
 
       <Box flex="1" display="flex" flexDirection="column">
-        <CalendarHeader month={month} onSignOut={onSignOut}/>
+        <CalendarHeader month={month}/>
         <Calendar weeks={weeks} onClickDay={openNewEvent} onClickEvent={setEditingEvent}/>
         <EventFormDialog 
           event={editingEvent} 

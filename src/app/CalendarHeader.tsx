@@ -5,12 +5,11 @@ import { UserMenu } from './UserMenu';
 
 interface ICalendarHeaderProps {
   month: string
-  onSignOut: () => void
 }
 
 export function CalendarHeader(props: ICalendarHeaderProps) {
 
-  const { month, onSignOut } = props
+  const { month } = props
 
   return (
     <Box display='flex' alignItems='center' padding='8px 16px'>
@@ -23,9 +22,7 @@ export function CalendarHeader(props: ICalendarHeaderProps) {
         </IconButton>
       </Box>
       <Box flex='1' marginLeft='16px' component='h3'>{ formatMonth(month) }</Box>
-      <UserMenu 
-        onSignOut={onSignOut}
-      />
+      <UserMenu />
     </Box>
   )
 }
