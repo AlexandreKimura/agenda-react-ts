@@ -1,6 +1,6 @@
 import { Box, Button } from '@mui/material';
 import { getCalendarsEndpoint, getEventsEndpoint, ICalendar, IEditingEvent, IEvent } from './backend';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getToday } from './dateFunctions';
 import { useParams } from 'react-router-dom';
 import { CalendarsView } from './CalendarsView';
@@ -22,7 +22,10 @@ export function CalendarScreen() {
 
   const [editingEvent, setEditingEvent] = useState<IEditingEvent | null>(null)
 
-  const weeks = generateCalendar(month + "-01", events, calendars, calendarsSelected)
+  //const weeks = generateCalendar(month + "-01", events, calendars, calendarsSelected)
+  const weeks = useMemo(() => {
+    return generateCalendar(month + "-01", events, calendars, calendarsSelected)
+  }, [month, events, calendars, calendarsSelected])
 
   const firstDate = weeks[0][0].date
   const lastDate = weeks[weeks.length - 1][6].date
@@ -88,6 +91,7 @@ function generateCalendar(
   calendars: ICalendar[],
   calendarsSelected: boolean[]
 ): ICalendarCell[][] {
+  console.log('Teste')
   const weeks: ICalendarCell[][] = []
   const jsDate = new Date(date + "T12:00:00")
   const currentMonth = jsDate.getMonth()
