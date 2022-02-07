@@ -1,6 +1,6 @@
 import { Box, Button } from '@mui/material';
 import { getCalendarsEndpoint, getEventsEndpoint, ICalendar, IEditingEvent, IEvent } from './backend';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getToday } from './dateFunctions';
 import { useParams } from 'react-router-dom';
 import { CalendarsView } from './CalendarsView';
@@ -43,19 +43,20 @@ export function CalendarScreen() {
     getEventsEndpoint(firstDate, lastDate).then(setEvents)
   }
   
-  function toggleCalendar(i: number) {
+  const toggleCalendar = useCallback((i: number) => {
     const newValue = [...calendarsSelected]
     newValue[i] = !newValue[i]
     setCalendarsSelected(newValue)
-  }
+  }, [calendarsSelected])
 
-  function openNewEvent(date: string) {
-    setEditingEvent({
-      date,
-      desc: "",
-      calendarId: calendars[0].id
-    })
-  }
+  const openNewEvent = useCallback((date: string) => {
+      setEditingEvent({
+        date,
+        desc: "",
+        calendarId: calendars[0].id
+      })
+    }, [calendars]
+  )
 
   return (
     <Box display='flex' height="100%" alignItems="stretch">

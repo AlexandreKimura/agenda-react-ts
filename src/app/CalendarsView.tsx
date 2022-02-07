@@ -1,4 +1,5 @@
 import { Box, FormControlLabel, Checkbox } from "@mui/material";
+import { memo } from "react";
 import { ICalendar } from "./backend";
 
 interface ICalendarsViewProps {
@@ -7,7 +8,7 @@ interface ICalendarsViewProps {
   calendarsSelected: boolean[]
 }
 
-export function CalendarsView(props: ICalendarsViewProps) {
+export const CalendarsView = memo(function (props: ICalendarsViewProps) {
 
   const { calendars, calendarsSelected, toggleCalendar } = props;
 
@@ -24,4 +25,4 @@ export function CalendarsView(props: ICalendarsViewProps) {
       ))}
     </Box>
   )
-}
+})

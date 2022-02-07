@@ -8,6 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import { Box, Icon } from '@mui/material';
 import { ICalendar, IEvent } from './backend';
 import { getToday } from './dateFunctions';
+import { memo } from 'react';
 
 const DAYS_OF_WEEK = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB']
 
@@ -61,7 +62,7 @@ interface ICalendarProps {
   onClickEvent: (event: IEvent) => void
 }
 
-export function Calendar(props: ICalendarProps) {
+export const Calendar = memo(function (props: ICalendarProps) {
 
   const { weeks, onClickDay, onClickEvent } = props
   const classes = useStyles()
@@ -115,7 +116,7 @@ export function Calendar(props: ICalendarProps) {
       </Table>
     </TableContainer>
   )
-}
+})
 
 export type IEventWithCalendar = IEvent & { calendar: ICalendar }
 
