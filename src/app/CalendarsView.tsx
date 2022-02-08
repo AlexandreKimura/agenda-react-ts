@@ -1,16 +1,17 @@
 import { Box, FormControlLabel, Checkbox } from "@mui/material";
-import { memo } from "react";
+import { Dispatch, memo } from "react";
 import { ICalendar } from "./backend";
+import { ICalendarScreenAction } from "./calendarScreenReducer";
 
 interface ICalendarsViewProps {
   calendars: ICalendar[],  
-  toggleCalendar: (i: number) => void, 
+  dispatch: Dispatch<ICalendarScreenAction>
   calendarsSelected: boolean[]
 }
 
 export const CalendarsView = memo(function (props: ICalendarsViewProps) {
 
-  const { calendars, calendarsSelected, toggleCalendar } = props;
+  const { calendars, calendarsSelected, dispatch } = props;
 
   return (
     <Box marginTop='64px'>
@@ -18,7 +19,13 @@ export const CalendarsView = memo(function (props: ICalendarsViewProps) {
       {calendars.map((calendar, i) => (
         <div key={calendar.id} >
           <FormControlLabel
-            control={<Checkbox style={{ color: calendar.color }} checked={calendarsSelected[i]} onChange={() => toggleCalendar(i)}/>} 
+            control={
+              <Checkbox
+                style={{ color: calendar.color }}
+                checked={calendarsSelected[i]}
+                onChange={() => dispatch({ type: "toggleCalendar", payload: i})}
+              />
+            } 
             label={calendar.name}
           />
         </div>

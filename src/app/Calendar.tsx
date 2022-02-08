@@ -8,7 +8,8 @@ import TableRow from '@mui/material/TableRow';
 import { Box, Icon } from '@mui/material';
 import { ICalendar, IEvent } from './backend';
 import { getToday } from './dateFunctions';
-import { memo } from 'react';
+import { Dispatch, memo } from 'react';
+import { ICalendarScreenAction } from './calendarScreenReducer';
 
 const DAYS_OF_WEEK = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB']
 
@@ -58,18 +59,17 @@ const useStyles = makeStyles({
 
 interface ICalendarProps {
   weeks: ICalendarCell[][]
-  onClickDay: (date: string) => void 
-  onClickEvent: (event: IEvent) => void
+  dispatch: Dispatch<ICalendarScreenAction>
 }
 
 export const Calendar = memo(function (props: ICalendarProps) {
 
-  const { weeks, onClickDay, onClickEvent } = props
+  const { weeks, dispatch } = props
   const classes = useStyles()
 
   function handleClick(e: React.MouseEvent, date: string) {
     if(e.target === e.currentTarget) {
-      onClickDay(date)
+      dispatch({type: "new", payload: date})
     }
   }
 
@@ -93,7 +93,11 @@ export const Calendar = memo(function (props: ICalendarProps) {
                   {cell.events.map(event => {
                     const color = event.calendar.color
                     return (
-                      <button key={event.id} className={classes.event} onClick={() => onClickEvent(event)}>
+                      <button
+                        key={event.id}
+                        className={classes.event}
+                        onClick={() => dispatch({type: "edit", payload: event})}
+                      >
                         {event.time && (
                           <> 
                             <Icon style={{ color }} fontSize='inherit'>
