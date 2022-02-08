@@ -9,9 +9,7 @@ import { Calendar, ICalendarCell, IEventWithCalendar } from './Calendar';
 import { EventFormDialog } from './EventFormDialog'
 import { reducer } from './calendarScreenReducer'
 
-export function CalendarScreen() {
-
-  let { month } = useParams<{ month: string }>()
+function useCalendarScreenState(month: string) {
 
   const [state, dispatch] = useReducer(reducer, {
     calendars: [],
@@ -46,9 +44,27 @@ export function CalendarScreen() {
     })
   }
 
+  return {
+    weeks,
+    calendars,
+    dispatch,
+    refreshEvent,
+    calendarsSelected,
+    editingEvent
+  }
+}
+
+export function CalendarScreen() {
+
+  let { month } = useParams<{ month: string }>()
+
+  month = String(month)
+
+  const { weeks, calendars, dispatch, refreshEvent, calendarsSelected, editingEvent } = useCalendarScreenState(month)
+
   const closeDialog =   useCallback(() => {
     dispatch({type: "closeDialog"})
-  }, [])
+  }, [dispatch])
 
   return (
     <Box display='flex' height="100%" alignItems="stretch">
@@ -67,10 +83,8 @@ export function CalendarScreen() {
         <EventFormDialog 
           event={editingEvent} 
           onCancel={closeDialog}
-          //onCancel={() => setEditingEvent(null)} 
           onSave={() => {
             closeDialog()
-            //setEditingEvent(null); 
             refreshEvent()
           }}
           calendars={calendars}
@@ -86,7 +100,7 @@ function generateCalendar(
   calendars: ICalendar[],
   calendarsSelected: boolean[]
 ): ICalendarCell[][] {
-  console.log('Teste')
+
   const weeks: ICalendarCell[][] = []
   const jsDate = new Date(date + "T12:00:00")
   const currentMonth = jsDate.getMonth()

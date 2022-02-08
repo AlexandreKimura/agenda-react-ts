@@ -1,7 +1,7 @@
 import { IconButton, Avatar, Icon, Menu, MenuItem, Box } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import React, { useContext, useState } from "react";
-import { authContext } from "./authContext";
+import React, { useState } from "react";
+import { useAuthContext } from "./authContext";
 import { signOutEndpoint } from "./backend";
 
 const useStyles = makeStyles({
@@ -18,7 +18,7 @@ const useStyles = makeStyles({
 })
 
 export function UserMenu() {
-  const { onSignOut, user } = useContext(authContext)
+  const { onSignOut, user } = useAuthContext()
 
   const classes = useStyles()
 
